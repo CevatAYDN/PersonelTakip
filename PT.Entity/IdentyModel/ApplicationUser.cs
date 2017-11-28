@@ -18,6 +18,7 @@ namespace PT.Entity.IdentyModel
         public string Surname { get; set; }
         [Column(TypeName = "smalldatetime")]
         public DateTime RegistryDate { get; set; } = DateTime.Now;
+        public  string ActivationCode { get; set; }
         public int? DepartmentId { get; set; }
         [ForeignKey("DepartmentId")]
         public virtual Department Department { get; set; }

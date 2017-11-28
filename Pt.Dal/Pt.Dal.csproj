@@ -78,6 +78,10 @@
     <Compile Include="Migrations\201711281236319_ilk.Designer.cs">
       <DependentUpon>201711281236319_ilk.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201711281413015_iki.cs" />
+    <Compile Include="Migrations\201711281413015_iki.Designer.cs">
+      <DependentUpon>201711281413015_iki.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Mycontext.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -95,6 +99,9 @@
   <ItemGroup>
     <EmbeddedResource Include="Migrations\201711281236319_ilk.resx">
       <DependentUpon>201711281236319_ilk.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201711281413015_iki.resx">
+      <DependentUpon>201711281413015_iki.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
