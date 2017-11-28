@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace PT.Entity.Model
 {
     [Table("Laborlogs")]
-    public class LaborLog
+    public class LaborLog:BaseModel
     {
 
         public DateTime StartShift { get; set; } = DateTime.Now;

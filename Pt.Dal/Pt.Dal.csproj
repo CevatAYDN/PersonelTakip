@@ -74,6 +74,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Migrations\201711281236319_ilk.cs" />
+    <Compile Include="Migrations\201711281236319_ilk.Designer.cs">
+      <DependentUpon>201711281236319_ilk.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Mycontext.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -86,6 +91,11 @@
       <Project>{46589ff1-fc24-4765-a80c-fc00f52f2999}</Project>
       <Name>PT.Entity</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\201711281236319_ilk.resx">
+      <DependentUpon>201711281236319_ilk.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

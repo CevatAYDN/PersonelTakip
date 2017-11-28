@@ -12,10 +12,10 @@ namespace Pt.Dal
 {
     public class Mycontext:IdentityDbContext<ApplicationUser>
     {
-        public Mycontext() : base("bame=Mycon") { }
+        public Mycontext() : base("name=Mycon") { }
 
         public virtual DbSet<Department> Departments { get; set; }
-        public virtual DbSet<LaborLog> LaborLogs { get; set; }
+        public virtual DbSet<LaborLog> LaborLogss { get; set; }
         public virtual DbSet<SalaryLog> SalaryLogs { get; set; }
 
     }
