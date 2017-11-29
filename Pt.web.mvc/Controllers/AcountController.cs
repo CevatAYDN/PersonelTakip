@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNet.Identity;
+using Microsoft.Owin.Security;
 using Pt.Bl.AccountRepository;
 using Pt.Bl.Settings;
 using PT.Entity.IdentyModel;
@@ -71,7 +72,7 @@ namespace Pt.web.mvc.Controllers
                         To = user.Email
                     });
                 }
-                return RedirectToAction("Login", "Account");
+                return RedirectToAction("Login", "Acount");
             }
             else
             {
@@ -79,5 +80,72 @@ namespace Pt.web.mvc.Controllers
                 return View();
             }
         }
+
+        public ActionResult Login()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> Login(LoginViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+            var userManager = MemberShipTools.NewUserManager();
+            var user = await userManager.FindAsync(model.UserName, model.Password);
+            if (user == null)
+            {
+                ModelState.AddModelError(string.Empty, "Böyle Bir kullanıcı bulunamadı");
+                return View(model);
+            }
+            var authManager = HttpContext.GetOwinContext().Authentication;
+            var useridentity = await userManager.CreateIdentityAsync(user, DefaultAuthenticationTypes.ApplicationCookie);
+            authManager.SignIn(new AuthenticationProperties()
+            {
+                IsPersistent = model.RememberMe
+            }, useridentity);
+            return RedirectToAction("Index", "Home");
+        }
+
+        [Authorize]
+        public ActionResult Logout()
+        {
+            var authManager = HttpContext.GetOwinContext().Authentication;
+            authManager.SignOut();
+            return RedirectToAction("Login", "Acount");
+        }
+
+        public async Task<ActionResult> Activation(string code)
+        {
+            var userStore = MemberShipTools.NewUserStore();
+            var userManager = new UserManager<ApplicationUser>(userStore);
+            var sonuc = userStore.Context.Set<ApplicationUser>().FirstOrDefault(x => x.ActivationCode == code);
+            if (sonuc == null)
+            {
+                ViewBag.sonuc = "Aktivasyon işlemi Başarısız";
+                return View();
+            }
+            sonuc.EmailConfirmed = true;
+            await userStore.UpdateAsync(sonuc);
+            await userStore.Context.SaveChangesAsync();
+
+            userManager.RemoveFromRole(sonuc.Id, "Passive");
+            userManager.AddToRole(sonuc.Id, "User");
+
+            ViewBag.sonuc = $"Merhaba{sonuc.Name} {sonuc.Surname}<br/> Aktivasyon işleminiz başarılı";
+
+                await SiteSettings.SendMail(new MailModel()
+                {
+                    To = sonuc.Email,
+                    Message = ViewBag.sonuc.ToString(),
+                    Subject="Aktivasyon",
+                    Bcc="cvtaydn53@gmail.com"
+                });
+            return View();
+        }
     }
+
 }
