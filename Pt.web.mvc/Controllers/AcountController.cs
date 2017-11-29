@@ -37,6 +37,12 @@ namespace Pt.web.mvc.Controllers
                 ModelState.AddModelError(string.Empty, "Bu kullacını zaten kayıtlı");
                 return View(model);
             }
+            checkuser = userManager.FindByEmail(model.Email);
+            if (checkuser!=null)
+            {
+                ModelState.AddModelError(string.Empty, "Bu kullacını zaten kayıtlı");
+                return View(model);
+            }
 
             var activationcode = Guid.NewGuid().ToString();
             ApplicationUser user = new ApplicationUser()
@@ -137,15 +143,49 @@ namespace Pt.web.mvc.Controllers
 
             ViewBag.sonuc = $"Merhaba{sonuc.Name} {sonuc.Surname}<br/> Aktivasyon işleminiz başarılı";
 
-                await SiteSettings.SendMail(new MailModel()
-                {
-                    To = sonuc.Email,
-                    Message = ViewBag.sonuc.ToString(),
-                    Subject="Aktivasyon",
-                    Bcc="cvtaydn53@gmail.com"
-                });
+            await SiteSettings.SendMail(new MailModel()
+            {
+                To = sonuc.Email,
+                Message = ViewBag.sonuc.ToString(),
+                Subject = "Aktivasyon",
+                Bcc = "cvtaydn53@gmail.com"
+            });
             return View();
         }
+
+        public ActionResult RecoverPassword()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> RecoverPassword(string email)
+        {
+            var userStore = MemberShipTools.NewUserStore();
+            var userManager = new UserManager<ApplicationUser>(userStore);
+            var sonuc = userStore.Context.Set<ApplicationUser>().FirstOrDefault(x => x.Email == email);
+            if (sonuc == null)
+            {
+                ViewBag.sonuc = "E mail Adresiniz sisteme kayıtlı değil";
+                return View();
+            }
+            var randompass = Guid.NewGuid().ToString().Replace("-", "").Substring(0, 6);
+            await userStore.SetPasswordHashAsync(sonuc, userManager.PasswordHasher.HashPassword(randompass));
+            await userStore.UpdateAsync(sonuc);
+            await userStore.Context.SaveChangesAsync();
+
+            await SiteSettings.SendMail(new MailModel()
+            {
+                To=sonuc.Email,
+                Subject="Şifreniz Değişti",
+                Message=$"Merhaba {sonuc.Name}{sonuc.Surname} <br/> Yeni Şifreniz:<b>{randompass}</b>"
+            });
+            ViewBag.sonuc = "E mail adresinize yeni şifreniz gönderilmiştir";
+            return View();
+        }
+
+
     }
 
 }

@@ -31,7 +31,11 @@
             </div>
             <div class="col-sm-6">
                 <input type="submit" value="Giriş Yap" class="btn btn-block btn-success" />
+                @Html.ActionLink("Şifremi Unuttum","RecoverPassword","Acount",new { @class="btn btn-warning btn-block"})
             </div>
         </div>
     }
+    <div class="text-center text-info">
+        <h1>@Html.Raw(ViewBag.sonuc)</h1>
+    </div>
 </div>
