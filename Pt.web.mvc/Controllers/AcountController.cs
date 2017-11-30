@@ -184,7 +184,21 @@ namespace Pt.web.mvc.Controllers
             ViewBag.sonuc = "E mail adresinize yeni şifreniz gönderilmiştir";
             return View();
         }
-
+        [Authorize]
+        public ActionResult Profil()
+        {
+            var userManager = MemberShipTools.NewUserManager();
+            var user = userManager.FindById(HttpContext.GetOwinContext().Authentication.User.Identity.GetUserId());
+            var model = new ProfilViewModel()
+            {
+                Id = user.Id,
+                Email = user.Email,
+                Name = user.Name,
+                Surname = user.Surname,
+                UserName = user.UserName
+            };
+            return View(model);
+        }
 
     }
 
