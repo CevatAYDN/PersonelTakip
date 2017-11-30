@@ -28,12 +28,10 @@ namespace PT.Entity.ViewModel
         [EmailAddress]
 
         public string Email { get; set; }
-        [Required]
         [Display(Name = "Eski Şifre")]
         [StringLength(100,MinimumLength =5,ErrorMessage ="Şifreniz En az 5 Karatker Olmalı")]
 
         public string OldPassword { get; set; }
-        [Required]
         [Display(Name = "Yeni Şifre")]
         [StringLength(100, MinimumLength = 5, ErrorMessage = "Şifreniz En az 5 Karatker Olmalı")]
 

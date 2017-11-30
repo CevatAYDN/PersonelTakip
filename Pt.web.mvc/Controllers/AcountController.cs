@@ -38,7 +38,7 @@ namespace Pt.web.mvc.Controllers
                 return View(model);
             }
             checkuser = userManager.FindByEmail(model.Email);
-            if (checkuser!=null)
+            if (checkuser != null)
             {
                 ModelState.AddModelError(string.Empty, "Bu kullacını zaten kayıtlı");
                 return View(model);
@@ -177,9 +177,9 @@ namespace Pt.web.mvc.Controllers
 
             await SiteSettings.SendMail(new MailModel()
             {
-                To=sonuc.Email,
-                Subject="Şifreniz Değişti",
-                Message=$"Merhaba {sonuc.Name}{sonuc.Surname} <br/> Yeni Şifreniz:<b>{randompass}</b>"
+                To = sonuc.Email,
+                Subject = "Şifreniz Değişti",
+                Message = $"Merhaba {sonuc.Name}{sonuc.Surname} <br/> Yeni Şifreniz:<b>{randompass}</b>"
             });
             ViewBag.sonuc = "E mail adresinize yeni şifreniz gönderilmiştir";
             return View();
@@ -198,6 +198,67 @@ namespace Pt.web.mvc.Controllers
                 UserName = user.UserName
             };
             return View(model);
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> Profil(ProfilViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+            try
+            {
+                var userStore = MemberShipTools.NewUserStore();
+                var userManager = new UserManager<ApplicationUser>(userStore);
+                var user = userManager.FindById(model.Id);
+
+                user.Name = model.Name;
+                user.Surname = model.Surname;
+                if (user.Email != model.Email)
+                {
+                    user.Email = model.Email;
+                    if (HttpContext.User.IsInRole("Admin"))
+                    {
+                        userManager.RemoveFromRole(user.Id, "Admin");
+                    }
+                    else if (HttpContext.User.IsInRole("User"))
+                    {
+                        userManager.RemoveFromRole(user.Id, "User");
+                    }
+                    userManager.AddToRole(user.Id, "Passive");
+                    user.ActivationCode = Guid.NewGuid().ToString().Replace("-", "");
+                    string siteUrl = Request.Url.Scheme + Uri.SchemeDelimiter + Request.Url.Host + (Request.Url.IsDefaultPort ? "" : ":" + Request.Url.Port);
+
+                    await SiteSettings.SendMail(new MailModel
+                    {
+                        To = user.Email,
+                        Subject = "Personel Yönetimi-Aktivasyon",
+                        Message = $"Merhaba {user.Name}{user.Surname}, </br> Sisteme başarı ile kayıt oldunuz. <br/> Hesabınızı aktifleştirmek için <a href='{siteUrl}/Account/Activation?code={user.ActivationCode}'>Aktivasyon Kodu</a>",
+                    });
+
+
+                }
+                await userStore.UpdateAsync(user);
+                await userStore.Context.SaveChangesAsync();
+                var model1 = new ProfilViewModel()
+                {
+                    Id = user.Id,
+                    Email = user.Email,
+                    Name = user.Name,
+                    Surname = user.Surname,
+                    UserName = user.UserName
+
+                };
+                ViewBag.sonuc = "Bilgileriniz Güncellendi";
+                return View(model1);
+            }
+            catch (Exception ex)
+            {
+
+                ViewBag.sonuc = ex.Message;
+                return View(model);
+            }
         }
 
     }

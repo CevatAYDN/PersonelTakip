@@ -5,11 +5,15 @@
 }
 
 <h2 class="text-primary">@Model.Name @Model.Surname</h2>
+@Html.ValidationSummary();
+<h2 class="text-info">@ViewBag.sonuc</h2>
 <div class="row">
-    <div class="col-md-offset-3 col-md-6" >
-        @using (Html.BeginForm("Profile", "Acount", FormMethod.Post))
+    <div class=" col-md-6" >
+        @using (Html.BeginForm("Profil", "Acount", FormMethod.Post))
         {
             @Html.AntiForgeryToken()
+            @Html.HiddenFor(x => x.Id)
+
             <div class="form-group">
                 @Html.LabelFor(x=>x.UserName)
                 @Html.TextBoxFor(x => x.UserName, new { @class="form-control",placeholder="Kullanıcı Adı"})
@@ -25,13 +29,46 @@
                 @Html.TextBoxFor(x => x.Surname, new { @class = "form-control", placeholder = "Soyad" })
             </div>
 
+            <div class="form-group">
+                @Html.LabelFor(x => x.Email)
+                @Html.TextBoxFor(x => x.Email, new { @class = "form-control", placeholder = "Email" })
+            </div>
+
             <div class="row">
                 <div class="col-sm-12">
                     <input type="submit" value="Profili Güncelle" class="btn btn-success btn-block"/>
                 </div>
             </div>
 
+        }
+    </div>
 
+    <div class=" col-md-6">
+        @using (Html.BeginForm("UpdatePassword", "Acount", FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(x=>x.Id)
+            <div class="form-group">
+                <div class="form-group">
+                    @Html.LabelFor(x => x.OldPassword)
+                    @Html.TextBoxFor(x => x.OldPassword, new { @class = "form-control" })
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(x => x.NewPassword)
+                    @Html.TextBoxFor(x => x.NewPassword, new { @class = "form-control" })
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(x => x.NewPasswordConfirm)
+                    @Html.TextBoxFor(x => x.NewPasswordConfirm, new { @class = "form-control" })
+                </div>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <input type="submit" value="Şifre Değiştir" class="btn btn-primary btn-block" />
+                    </div>
+                </div>
+            </div>
         }
     </div>
 </div>
