@@ -261,6 +261,40 @@ namespace Pt.web.mvc.Controllers
             }
         }
 
-    }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> UpdatePassword(ProfilViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+            try
+            {
+                var userStore = MemberShipTools.NewUserStore();
+                var userManager = new UserManager<ApplicationUser>(userStore);
+                var user = userManager.FindById(model.Id);
+                user = userManager.Find(user.UserName, model.OldPassword);
+                if (user == null)
+                {
+                    ModelState.AddModelError(string.Empty, "Mevcut şifreniz doğru değil");
+                    return View("Profil",model);
+                }
 
+                await userStore.SetPasswordHashAsync(user, userManager.PasswordHasher.HashPassword(model.NewPassword));
+                await userStore.UpdateAsync(user);
+                await userStore.Context.SaveChangesAsync();
+
+                HttpContext.GetOwinContext().Authentication.SignOut();
+                return View("Profil");
+
+            }
+            catch (Exception ex)
+            {
+                ViewBag.sonuc = "Güncelleştirme hatalı" + ex.Message;
+                return View("Profil",model);
+            }
+        }
+
+    }
 }
