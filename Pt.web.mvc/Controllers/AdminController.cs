@@ -44,39 +44,33 @@ namespace Pt.web.mvc.Controllers
         public ActionResult EditUser(string id)
         {
             if (id == null)
-            {
                 RedirectToAction("Index");
 
-                var roles = MemberShipTools.NewRoleManager().Roles.ToList();
-                List<SelectListItem> rolist = new List<SelectListItem>();
-                roles.ForEach(x => new SelectListItem()
-                {
-                    Text = x.Name,
-                    Value = x.Id
-                });
-                ViewBag.roles = rolist;
+            var roles = MemberShipTools.NewRoleManager().Roles.ToList();
+            List<SelectListItem> rolList = new List<SelectListItem>();
+            roles.ForEach(x => new SelectListItem()
+            {
+                Text = x.Name,
+                Value = x.Id
+            });
+            ViewBag.roles = rolList;
+            var userManager = MemberShipTools.NewUserManager();
+            var user = userManager.FindById(id);
+            if (user == null)
+                return RedirectToAction("Index");
 
-                var userManager = MemberShipTools.NewUserManager();
-                var user = userManager.FindById(id);
-                if (user == null)
-                {
-                    return RedirectToAction("Index");
-                }
-
-                var model = new UsersViewModel()
-                {
-                    UserName = user.UserName,
-                    Name = user.Name,
-                    Email = user.Email,
-                    RegisterDate = user.RegistryDate,
-                    RoleId = user.Roles.ToList().FirstOrDefault().RoleId,
-                    RoleName = roles.FirstOrDefault(r => r.Id == userManager.FindById(user.Id).Roles.FirstOrDefault().RoleId).Name,
-                    Salary = user.Salary,
-                    SurName = user.Surname,
-                    UserId=user.Id
-                };
-                
-            }
+            var model = new UsersViewModel()
+            {
+                UserName = user.UserName,
+                Email = user.Email,
+                SurName = user.Surname,
+                Name = user.Name,
+                RegisterDate = user.RegistryDate,
+                RoleId = user.Roles.ToList().FirstOrDefault().RoleId,
+                RoleName = roles.FirstOrDefault(r => r.Id == userManager.FindById(user.Id).Roles.FirstOrDefault().RoleId).Name,
+                Salary = user.Salary,
+                UserId = user.Id
+            };
             return View(model);
         }
     }
