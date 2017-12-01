@@ -1,0 +1,63 @@
+﻿@model PT.Entity.ViewModel.UsersViewModel
+@{
+    ViewBag.Title = $"Profil Düzenle - {Model.UserName}";
+}
+
+<h2>@Model.Name @Model.SurName</h2>
+
+<div class="row">
+    <div class="col-md-offset-1 col-md-10">
+        @using (Html.BeginForm("EditUser", "Admin", FormMethod.Post))
+        {
+            @Html.HiddenFor(x => x.UserId)
+            @Html.AntiForgeryToken();
+
+
+            <div class="form-group">
+                @Html.LabelFor(x => x.UserName)
+                @Html.TextBoxFor(x => x.UserName, new { @class = "form-control", placeholder = "Kullanıcı Adı" })
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(x => x.Name)
+                @Html.TextBoxFor(x => x.Name, new { @class = "form-control", placeholder = "Adı" })
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(x => x.SurName)
+                @Html.TextBoxFor(x => x.SurName, new { @class = "form-control", placeholder = "Soyad" })
+            </div>
+
+
+
+            <div class="form-group">
+                @Html.LabelFor(x => x.Email)
+                @Html.TextBoxFor(x => x.Email, new { @class = "form-control", placeholder = "E-mail" })
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(x => x.Salary)
+                @Html.TextBoxFor(x => x.Salary, new { @class = "form-control", placeholder = "Maaş" })
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(x => x.RegisterDate)
+                @Html.TextBoxFor(x => x.RegisterDate, new { @class = "form-control", placeholder = "Kayıt Tarihi" })
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(x => x.RoleName)
+                @Html.DropDownListFor(x => x.RoleId, (List<SelectListItem>)ViewBag.roles, new { @class = "form-control" })
+            </div>
+
+            <div class="row">
+                <div class="col-sm-6">
+                    <input type="submit" class="btn btn-block btn-success" value="Güncelle" />
+                </div>
+            </div>
+
+        }
+
+    </div>
+</div>
+
