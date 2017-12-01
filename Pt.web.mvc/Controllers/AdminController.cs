@@ -9,36 +9,75 @@ using System.Web.Mvc;
 
 namespace Pt.web.mvc.Controllers
 {
-    [Authorize(Roles ="Admin")]
+    [Authorize(Roles = "Admin")]
     public class AdminController : Controller
     {
         // GET: Admin
         public ActionResult Index()
         {
+            var roles = MemberShipTools.NewRoleManager().Roles.ToList();
             var userManager = MemberShipTools.NewUserManager();
-            var users = userManager.Users.Select(x=> new UsersViewModel
+            var users = userManager.Users.ToList().Select(x => new UsersViewModel
             {
-                Email=x.Email,
-                Name=x.Name,
-                RegisterDate=x.RegistryDate,
-                Salary=x.Salary,
-                SurName=x.Surname,
-                UserId=x.Id,
-                UserName=x.UserName,
-                RoleId=x.Roles.FirstOrDefault().RoleId,
-                RoleName=MemberShipTools.NewRoleManager().FindById(x.Roles.FirstOrDefault().RoleId).Name
+                Email = x.Email,
+                Name = x.Name,
+                RegisterDate = x.RegistryDate,
+                Salary = x.Salary,
+                SurName = x.Surname,
+                UserId = x.Id,
+                UserName = x.UserName,
+                RoleId = x.Roles.FirstOrDefault().RoleId,
+                RoleName = roles.FirstOrDefault(y => y.Id == userManager.FindById(x.Id).Roles.FirstOrDefault().RoleId).Name
             }).ToList();
 
-            var roles = MemberShipTools.NewRoleManager().Roles.ToList();
-            List<SelectListItem> rolist = new List<SelectListItem>();
-            roles.ForEach(x => new SelectListItem()
-            {
-                Text=x.Name,
-                Value=x.Id
-            });
-            ViewBag.roles = rolist;
+            //List<SelectListItem> rolist = new List<SelectListItem>();
+            //roles.ForEach(x => new SelectListItem()
+            //{
+            //    Text=x.Name,
+            //    Value=x.Id
+            //});
+            //ViewBag.roles = rolist;
 
             return View(users);
+        }
+
+        public ActionResult EditUser(string id)
+        {
+            if (id == null)
+            {
+                RedirectToAction("Index");
+
+                var roles = MemberShipTools.NewRoleManager().Roles.ToList();
+                List<SelectListItem> rolist = new List<SelectListItem>();
+                roles.ForEach(x => new SelectListItem()
+                {
+                    Text = x.Name,
+                    Value = x.Id
+                });
+                ViewBag.roles = rolist;
+
+                var userManager = MemberShipTools.NewUserManager();
+                var user = userManager.FindById(id);
+                if (user == null)
+                {
+                    return RedirectToAction("Index");
+                }
+
+                var model = new UsersViewModel()
+                {
+                    UserName = user.UserName,
+                    Name = user.Name,
+                    Email = user.Email,
+                    RegisterDate = user.RegistryDate,
+                    RoleId = user.Roles.ToList().FirstOrDefault().RoleId,
+                    RoleName = roles.FirstOrDefault(r => r.Id == userManager.FindById(user.Id).Roles.FirstOrDefault().RoleId).Name,
+                    Salary = user.Salary,
+                    SurName = user.Surname,
+                    UserId=user.Id
+                };
+                
+            }
+            return View(model);
         }
     }
 }

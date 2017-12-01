@@ -27,7 +27,7 @@
                     @if (HttpContext.Current.User.Identity.IsAuthenticated)
                     {
                         <li>
-                            <a href="@Url.Action("Profil","Acount")">Çıkış yap</a>
+                            <a href="@Url.Action("Profil","Acount")">Profil Bilgileri</a>
                         </li>
                         <li>
                             <a href="@Url.Action("Logout","Acount")">Çıkış yap</a>
@@ -42,7 +42,7 @@
                     @if (HttpContext.Current.User.IsInRole("Admin"))
                     {
                         <li>
-                            <a href="@Url.Action("Admin","Index")">Admin Paneli</a>
+                            <a href="@Url.Action("Index","Admin")">Admin Paneli</a>
                         </li>
 
                     }
